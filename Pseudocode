@@ -1,0 +1,208 @@
+FUNCTION main():
+    OUTPUT ">>>>>----- UNIVERSITY OF LIBERAL ARTS BANGLADESH -----<<<<<"
+    OUTPUT ">>>>>----- Students Records Management System -----<<<<"
+    CALL menu()
+
+FUNCTION menu():
+    DECLARE choice as Integer
+
+    OUTPUT ">>>>>----- MENU -----<<<<<"
+    OUTPUT "Enter appropriate number to perform following task."
+    OUTPUT "1: Add Record"
+    OUTPUT "2: View Record"
+    OUTPUT "3: Search Record"
+    OUTPUT "4: Modify Record"
+    OUTPUT "5: Exit"
+    OUTPUT "Enter your choice: "
+    INPUT choice
+
+    SWITCH choice:
+        CASE 1:
+            CALL add()
+            BREAK
+        CASE 2:
+            CALL view()
+            BREAK
+        CASE 3:
+            CALL search()
+            BREAK
+        CASE 4:
+            CALL modify()
+            BREAK
+        CASE 5:
+            EXIT program
+            BREAK
+        DEFAULT:
+            OUTPUT "Invalid Choice."
+    CALL menu()
+
+FUNCTION add():
+    DECLARE fp as File Pointer
+    DECLARE std as student Struct
+    DECLARE another as Character
+
+    OPEN file "record.txt" in append binary mode (ab+)
+    IF fp is NULL THEN
+        OUTPUT "Error opening file"
+        EXIT program
+    END IF
+
+    REPEAT UNTIL another is not 'y':
+        OUTPUT "<--:ADD RECORD:-->"
+        OUTPUT "Enter details of student."
+
+        OUTPUT "Enter Student Name: "
+        INPUT std.student_name
+
+        OUTPUT "Enter Mobile Number: "
+        INPUT std.mobile_no
+
+        OUTPUT "Enter ID No: "
+        INPUT std.id_no
+
+        OUTPUT "Enter Department (CSE/EEE/BBA/MSJ): "
+        INPUT std.department
+
+        OUTPUT "Enter Gender (M/F): "
+        INPUT std.gender
+
+        OUTPUT "Enter Age: "
+        INPUT std.age
+
+        OUTPUT "Enter CGPA: "
+        INPUT std.cgpa
+
+        WRITE std to file fp
+        OUTPUT "Want to add another record? Press 'y' else 'n'."
+        INPUT another
+    END REPEAT
+
+    CLOSE file fp
+    CALL menu()
+
+FUNCTION view():
+    DECLARE fp as File Pointer
+    DECLARE std as student Struct
+    DECLARE found as Integer
+
+    OUTPUT "<--:VIEW RECORD:-->"
+    OUTPUT "Enter Department (CSE/EEE/BBA/MSJ) To View Details Of Students: "
+    INPUT std.department
+
+    IF std.department is not CSE, EEE, BBA, or MSJ THEN
+        OUTPUT "Invalid department code. Please try again."
+        RETURN
+    END IF
+
+    OPEN file "record.txt" in read binary mode (rb)
+    IF fp is NULL THEN
+        OUTPUT "Error opening file"
+        EXIT program
+    END IF
+
+    WHILE reading student details from file fp:
+        IF std.department is equal to department in std THEN
+            OUTPUT "Student Name:", std.student_name
+            OUTPUT "Student ID No:", std.id_no
+            OUTPUT "Student Mobile Number:", std.mobile_no
+            OUTPUT "Student Department:", std.department
+            OUTPUT "Student Gender:", std.gender
+            OUTPUT "Student Age:", std.age
+            OUTPUT "Student CGPA:", std.cgpa
+            SET found to 1
+            BREAK loop
+        END IF
+    END WHILE
+
+    IF found is 0 THEN
+        OUTPUT "No student record found for the entered department."
+    END IF
+
+    CLOSE file fp
+    CALL menu()
+
+FUNCTION search():
+    DECLARE fp as File Pointer
+    DECLARE std as student Struct
+    DECLARE stidno as Integer
+    DECLARE found as Integer
+
+    OUTPUT "<--:SEARCH RECORD:-->"
+    OUTPUT "Enter ID No Of Student To Search: "
+    INPUT stidno
+
+    OPEN file "record.txt" in read mode (r)
+    IF fp is NULL THEN
+        OUTPUT "Error opening file"
+        EXIT program
+    END IF
+
+    WHILE reading student details from file fp:
+        IF std.id_no is equal to stidno THEN
+            OUTPUT "Student Name:", std.student_name
+            OUTPUT "Student ID No:", std.id_no
+            OUTPUT "Student Mobile Number:", std.mobile_no
+            OUTPUT "Student Department:", std.department
+            OUTPUT "Student Gender:", std.gender
+            OUTPUT "Student Age:", std.age
+            OUTPUT "Student CGPA:", std.cgpa
+            SET found to 1
+            BREAK loop
+        END IF
+    END WHILE
+
+    IF found is 0 THEN
+        OUTPUT "Student with ID", stidno, "not found."
+    END IF
+
+    CLOSE file fp
+    CALL menu()
+
+FUNCTION modify():
+    DECLARE stidno as Integer
+    DECLARE found as Integer
+    DECLARE fp, temp_fp as File Pointer
+    DECLARE std as student Struct
+
+    OUTPUT "<--:MODIFY RECORD:-->"
+    OUTPUT "Enter ID No Of Student To Modify: "
+    INPUT stidno
+
+    OPEN file "record.txt" in read mode (r)
+    IF fp is NULL THEN
+        OUTPUT "Error opening file"
+        EXIT program
+    END IF
+
+    OPEN file "temp.txt" in write mode (w)
+    IF temp_fp is NULL THEN
+        OUTPUT "Error creating temporary file"
+        CLOSE file fp
+        EXIT program
+    END IF
+
+    WHILE reading student details from file fp:
+        IF std.id_no is equal to stidno THEN
+            OUTPUT "Enter new details for student:"
+            OUTPUT "Enter Student Mobile Number: "
+            INPUT std.mobile_no
+            OUTPUT "Enter CGPA: "
+            INPUT std.cgpa
+            SET found to 1
+        END IF
+        WRITE std to temp_fp
+    END WHILE
+
+    CLOSE file fp
+
+    IF found is 0 THEN
+        OUTPUT "Student with ID", stidno, "not found."
+        REMOVE "temp.txt"
+    ELSE
+        CLOSE file temp_fp
+        REMOVE "record.txt"
+        RENAME "temp.txt" to "record.txt"
+        OUTPUT "Record modified successfully."
+    END IF
+
+    CALL menu()
