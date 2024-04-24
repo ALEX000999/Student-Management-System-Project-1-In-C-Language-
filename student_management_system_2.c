@@ -108,47 +108,61 @@ void add()
     fclose(fp);
     menu();
 }
+
 void view() {
-    FILE *fp;
-    struct student std;
-    int found = 0;
+  FILE *fp;
+  struct student std;
+  int found = 0;
+  char userEnteredDepartment[10];
+  int studentCount = 1; // Counter to number students
 
-    printf("<--:VIEW RECORD:-->\n");
+  printf("<--:VIEW RECORD:-->\n");
 
-    printf("Enter Department (CSE/EEE/BBA/MSJ) To View Details Of Students: \n");
-    fflush(stdin);
-    scanf("%s", std.department);
+  printf("Enter Department (CSE/EEE/BBA/MSJ) To View Details Of Students: \n");
+  fflush(stdin);
+  scanf("%s", userEnteredDepartment);
 
-    if (strcmp(std.department, "CSE") != 0 && strcmp(std.department, "EEE") != 0 && 
-        strcmp(std.department, "BBA") != 0 && strcmp(std.department, "MSJ") != 0) {
-        printf("Invalid department code. Please try again.\n");
-        return;
-    }
+  if (strcmp(userEnteredDepartment, "CSE") != 0 && strcmp(userEnteredDepartment, "EEE") != 0 &&
+      strcmp(userEnteredDepartment, "BBA") != 0 && strcmp(userEnteredDepartment, "MSJ") != 0) {
+    printf("Invalid department code. Please try again.\n");
+    return;
+  }
 
-    fp = fopen("record.txt", "rb");
-    if (fp == NULL) {
-        printf("Error opening file\n");
-        exit(1);
-    }
-    while (fread(&std, sizeof(std), 1, fp) == 1) {
-        if (strcmp(std.department, std.department) == 0) {
-            printf("Student Name: %s\n", std.student_name);
-            printf("Student ID No: %d\n", std.id_no);
-            printf("Student Mobile Number: %d\n", std.mobile_no);
-            printf("Student Department: %s\n", std.department);
-            printf("Student Gender: %s\n", std.gender);
-            printf("Student Age: %d\n", std.age);
-            printf("Student CGPA: %.2f\n", std.cgpa);
-            found = 1;
-            break;
-        }
-    }
-    if (!found) {
-        printf("No student record found for the entered department.\n");
-    }
+  fp = fopen("record.txt", "rb");
+  if (fp == NULL) {
+    printf("Error opening file\n");
+    exit(1);
+  }
+
+  if (feof(fp)) {
+    printf("No student records found in the file.\n");
     fclose(fp);
-    menu();
+    return;
+  }
+
+  while (fread(&std, sizeof(std), 1, fp) == 1) {
+    if (strcmp(std.department, userEnteredDepartment) == 0) {
+      printf("%d.\n", studentCount);
+      printf("Student Name: %s\n", std.student_name);
+      printf("Student ID No: %d\n", std.id_no);
+      printf("Student Mobile Number: %d\n", std.mobile_no);
+      printf("Student Department: %s\n", std.department);
+      printf("Student Gender: %s\n", std.gender);
+      printf("Student Age: %d\n", std.age);
+      printf("Student CGPA: %.2f\n", std.cgpa);
+      found = 1;
+      studentCount++; // Increment student counter
+    }
+  }
+
+  if (!found) {
+    printf("No student record found for the entered department.\n");
+  }
+
+  fclose(fp);
+  menu();
 }
+
 void search() {
     FILE *fp;
     struct student std;
