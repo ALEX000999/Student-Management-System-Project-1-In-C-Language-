@@ -114,7 +114,7 @@ void view() {
   struct student std;
   int found = 0;
   char userEnteredDepartment[10];
-  int studentCount = 1; // Counter to number students
+  int studentCount = 1;
 
   printf("<--:VIEW RECORD:-->\n");
 
@@ -151,7 +151,7 @@ void view() {
       printf("Student Age: %d\n", std.age);
       printf("Student CGPA: %.2f\n", std.cgpa);
       found = 1;
-      studentCount++; // Increment student counter
+      studentCount++;
     }
   }
 
