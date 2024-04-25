@@ -1,3 +1,4 @@
+START
 function main()
     display ">>>>>----- UNIVERSITY OF LIBERAL ARTS BANGLADESH -----<<<<<"
     display ">>>>>----- Students Records Management System -----<<<<"
@@ -119,3 +120,4 @@ function modify()
         rename "temp.txt" to "record.txt"
         display "Record modified successfully."
     call menu()
+END
